@@ -9,13 +9,13 @@ public abstract class Team
     protected String name;
     protected Color color;
     protected Flag flag;
-    protected Map map;
-    protected int genPoints;
+    private Map map;
+    private int genPoints;
     protected final Integer[] memory;
-    protected int ticks = 0;
+    private int ticks = 0;
     public Team(String name, Map map, int x, int y)
     {
-        genPoints = 0;
+        genPoints = 12;
         this.name = name;
         this.color = colors[cidx++ % 2];
         this.flag = new Flag(this.color);
@@ -23,86 +23,72 @@ public abstract class Team
         map.addObject(flag, x, y);
         List<Block> blocks = flag.blocksInRange(10);
         for(Block b: blocks){
-           // if(Math.random() > 0.75){
-                map.removeObject(b);
-           // }
+            map.removeObject(b);
         }
-       // blocks = flag.blocksInRange(5);
-      //  for(Block b: blocks){
-            //if(Math.random() > 0.5){
-        //        map.removeObject(b);
-            //}
-      //  }
+
         memory = new Integer[10];
         for(int i = 0; i < memory.length; i++){
             memory[i] = null;
         }
         generator();
     }
-    
+
     public Flag getFlag(){
         return flag;
     }
-    
+
     public Color getColor(){
         return color;
     }
-    
+
     public int getGenPoints(){
         return genPoints;
     }
-    
+
+    public final void build(Piece piece){
+        if( genPoints >= 6 ){
+            map.addObject(piece, flag.getX(), flag.getY());
+            genPoints -= 6;
+        }
+    }
+
     public abstract void generator();
-    // public void generator(){
-        // int x = flag.getX();
-        // int y = flag.getY();
-        // //if(color == Color.red){
-            // map.addObject(new Bolter(this), x, y);
-            
-            // map.addObject(new FlagScout(this), x, y);
-        // //    map.addObject(new Guard(this, x, y, 1), x, y);
-       // // }
-       
-    // }
-    
+
     public void receiveData(int index, int data){
         memory[index] = data;
     }
-    
+
     public int sendData(int index){
         return memory[index];
     }
-    
+
     public void getBonus(Bonus b){
         int value = b.getValue();
         genPoints += value;
     }
-    
-    public abstract void act();
-    // public void act(){
-        // if(ticks++ % 10000 == 0){
-            // genPoints++;
-        // }
-        // if( genPoints > 6){
-                // if(memory[0] != null){
-                    // System.out.println("Add a guard");
-                    // map.addObject(new Guard(this, memory[0], memory[1], 0), flag.getX(), flag.getY());
-                    // //genPoints-=3;
-                // } else {
-                    // map.addObject(new FlagScout(this),flag.getX(), flag.getY());
-                // }
-                // genPoints-=6;
-            // }
-        // String mem = name+" Team Memory: ";
-        // for(Integer m: memory){
-            // if( m != null){
-                // mem += m + " ";
-            // }else{
-                // mem += "- ";
-            // }
-        // }
-    // }
-    
+
+    public abstract void doStuff();
+
+    public void act(){
+        ticks++;
+        if(ticks % 5000 == 0){
+            genPoints++;
+        }
+        doStuff();
+    }
+
+    public void displayMemory(){
+        String mem = name+" Team Memory: ";
+        for(Integer m: memory){
+            if( m != null){
+                mem += m + " ";
+            }else{
+                mem += "- ";
+            }
+        }
+        System.out.println(mem);
+    }
+
     public class Guard extends Piece{
         private int gx, gy, gr;
         public Guard(Team team, int gx, int gy, int gr){
@@ -117,7 +103,7 @@ public abstract class Team
             img.setColor(Color.white);
             img.drawOval(3,3,4,4);
         }
-        
+
         public void movement(){
             Flag flag = team.getFlag();
             boolean hoor  = getX() > gx + gr || getX() < gx - gr;
@@ -170,23 +156,23 @@ public abstract class Team
                     else
                         down();
                 }else{
-                  //  super.movement();
+                    //  super.movement();
                 }
             }
-            
+
         }
     }
-    
+
     public class FlagScout extends Piece{
-        
+
         public FlagScout(Team team){
             super(team, 5, 3, 2, 0);  
             img.setColor(Color.black);
             img.fillOval(2,2,6,6);
-            
+
             memory[6] = team.getFlag().getX() > 30 ? 1 : 0;
             memory[5] = 0;
-                
+
         }
 
         public void setNewDirection(boolean rand){
@@ -198,9 +184,7 @@ public abstract class Team
                 memory[0] = newDir;
             }
         }
-        
-        
-        
+
         public void normalMove(){
             if(memory[6] == 1 && getX() > 30){
                 memory[0] = Math.random() > 0.5 ? 1 : getY() > 30 ? 0 : 2;
@@ -224,7 +208,7 @@ public abstract class Team
                 right();
             }
         }
-        
+
         public void homeMove(){
             Flag home = team.getFlag();
             int fx = flag.getX();
@@ -248,27 +232,28 @@ public abstract class Team
                     }
                 }
             }
-            
+
             memory[1] = getX();
             memory[2] = getY();
             if(memory[0] == 0){
-                    up();
-                }
+                up();
+            }
             if (memory[0] == 1){
                 left();
             }
             if (memory[0] == 2){
                 down();
-                
+
             }
             if (memory[0] == 3){
                 right();
             }
         } 
+
         public void movement(){
             if (memory[5] == 1){
                 homeMove();
-                
+
                 sendDataToTeam(0,memory[3]);
                 sendDataToTeam(1,memory[4]);
             } else {
@@ -280,28 +265,28 @@ public abstract class Team
                     memory[5] = 1;
                 }
             }
-                    }
-        
+        }
+
     }
-    
+
     public class Bolter extends Piece{
         public Bolter(Team team){
             super(team, 5, 3, 2, 0);
             memory[0] = Greenfoot.getRandomNumber(4);
             memory[1] = -1;
             memory[2] = -1;
-            
+
             img.setColor(Color.white);
             img.fillOval(2,2,6,6);
         }
-        
+
         public void act(){
             super.act();        
-            
+
         }
-        
+
         public void movement(){
-            
+
             List<Bonus> bonuses = searchForBonus();
             if (getX() == memory[1] && getY() == memory[2]){
                 changeDirection();
@@ -321,7 +306,7 @@ public abstract class Team
                         memory[0] = 2;
                     else if ( by < y )
                         memory[0] = 0;
-                        
+
                 }
             } else {
                 if(Math.random() > 0.9){
@@ -330,26 +315,26 @@ public abstract class Team
             }
             normalMove();
         }
-        
+
         public void normalMove(){
-                int dir = memory[0];
-                memory[1] = getX();
-                memory[2] = getY();
-                if(dir == 0){
-                    up();
-                }
-                if (dir == 1){
-                    left();
-                }
-                if (dir == 2){
-                    down();
-                    }
-                if (dir == 3){
-                    right();
-                }
-             
+            int dir = memory[0];
+            memory[1] = getX();
+            memory[2] = getY();
+            if(dir == 0){
+                up();
+            }
+            if (dir == 1){
+                left();
+            }
+            if (dir == 2){
+                down();
+            }
+            if (dir == 3){
+                right();
+            }
+
         }
-        
+
         public void changeDirection(){
             int dir;
             do {

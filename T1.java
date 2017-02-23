@@ -7,34 +7,15 @@ public class T1 extends Team
     }
 
     public void generator(){
-        int x = flag.getX();
-        int y = flag.getY();
-        map.addObject(new Bolter(this), x, y);
-
-        // map.addObject(new FlagScout(this), x, y);
-        // map.addObject(new Guard(this, x, y, 1), x, y)
+        build(new Guard(this, 15, 15, 10));
     }
 
-    public void act(){
-        if(ticks++ % 10000 == 0){
-            genPoints++;
-        }
-        if( genPoints > 6){
+    public void doStuff(){
+        if( getGenPoints() > 6){
             if(memory[0] != null){
-                System.out.println("Add a guard");
-                map.addObject(new Guard(this, memory[0], memory[1], 0), flag.getX(), flag.getY());
-                //genPoints-=3;
+                build(new Guard(this, memory[0], memory[1], 0));
             } else {
-                map.addObject(new FlagScout(this),flag.getX(), flag.getY());
-            }
-            genPoints-=6;
-        }
-        String mem = name+" Team Memory: ";
-        for(Integer m: memory){
-            if( m != null){
-                mem += m + " ";
-            }else{
-                mem += "- ";
+                build(new FlagScout(this));
             }
         }
     }
