@@ -32,7 +32,7 @@ public class Map extends World
     }
 
     public void init(){
-        Random r = new Random(roundN++);
+        Random r = new Random();//roundN++);
         List<Actor> actors = getObjects(null);
         for(Actor a: actors){
             removeObject(a);

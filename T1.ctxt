@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=T1
+comment0.text=\n\ memory[0]\ \=>\ moveLeft\n\ memory[1]\ \=>\ last\ x\ position\n\ memory[2]\ \=>\ movement\ state\ (0\ \=\ stuck,\ 1\ \=\ progressing,\ >\=2\ \=\ seeking\ a\ path\n
+comment1.params=name\ map\ x\ y
+comment1.target=T1(java.lang.String,\ Map,\ int,\ int)
+comment2.params=
+comment2.target=void\ generate()
+comment3.params=
+comment3.target=void\ doStuff()
+numComments=4

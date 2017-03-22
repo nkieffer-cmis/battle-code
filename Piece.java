@@ -22,7 +22,8 @@ public abstract class Piece extends Actor
     private int comms;
     private int ticks;
     private static int nextId = 0;
-    public final int id;
+    public
+    final int id;
     protected Team team;
     //private int newx, newy;
     private int dir;
@@ -49,17 +50,18 @@ public abstract class Piece extends Actor
         memory = new int[10];
         actionPoints = 2;
     }
+    
+    public int getCost(){
+        return see + step + fight + comms;
+    }
 
     public Color getColor(){
         return color;
     }
-    
+
     public void act() 
     {
-      //  GreenfootImage mapimg = getWorld().getBackground();
-        
-      //  mapimg.setColor(color.darker());
-      //mapimg.drawRect(getX()*10, getY() * 10, 10,10);
+
         markInvisible();
         if(ticks % step == 0){
             movement();
@@ -68,10 +70,10 @@ public abstract class Piece extends Actor
         checkVisibility();
         checkBattles();
         ticks++;   
-       
-        actionPoints = 2;
+
+        actionPoints = 1;
     } 
-    
+
     private void checkForBonus(){
         Bonus b = (Bonus)getOneIntersectingObject(Bonus.class);
         if(b != null){
@@ -80,12 +82,14 @@ public abstract class Piece extends Actor
             w.removeObject(b);
         }
     }
-    
+
     private boolean willCollide(int newx, int newy){
         Block b = (Block) getOneObjectAtOffset(newx, newy, Block.class);
         return b != null;
     }
-    
+
+    public abstract void movement();    
+
     protected final void up(){
         if ( actionPoints > 0 ){
             int newx = 0;
@@ -96,7 +100,7 @@ public abstract class Piece extends Actor
             actionPoints-=2;
         }
     }
-    
+
     protected final void down(){
         if ( actionPoints > 0 ){
             int newx = 0;
@@ -107,32 +111,43 @@ public abstract class Piece extends Actor
             actionPoints-=2;
         }
     }  
-    
+
     protected final void left(){
         if ( actionPoints > 0 ){
             int newx = -1;
             int newy = 0;
             if(!willCollide(newx, newy)){
-                 setLocation(getX()+newx, getY()+newy);
+                setLocation(getX()+newx, getY()+newy);
             }
             actionPoints-=2;
         }
     } 
-    
+
     protected final void right(){
         if ( actionPoints > 0 ){
             int newx = 1;
             int newy = 0;
             if(!willCollide(newx, newy)){
-                 setLocation(getX()+newx, getY()+newy);
+                setLocation(getX()+newx, getY()+newy);
             }
             actionPoints-=2;
         }
     }   
-    public abstract void movement();
 
-    
+    public List<Actor> getNeighbours(){
+        List<Actor> neighbours = super.getNeighbours(1, true, null);
+        return neighbours;
+    }
+
     public void checkVisibility(){
+        /**
+         * Marks all Pieces that are within sight range of this instance.
+         * 
+         * <p>
+         * Checky check check.
+         * </p>
+         * @return void
+         */
         if(actionPoints > 0){
             List<Piece> vp = visiblePieces();
             if(vp.size() > 0){
@@ -145,7 +160,7 @@ public abstract class Piece extends Actor
             actionPoints--;
         }
     }
-    
+
     public List<Bonus> searchForBonus(){
         if(actionPoints > 0){
             List<Bonus> bonuses = getObjectsInRange(see, Bonus.class);
@@ -154,22 +169,22 @@ public abstract class Piece extends Actor
         }
         return null;
     }
-    
+
     public Flag searchForFlag(){
-       // if(actionPoints > 0){
-            Map map = (Map)getWorld();
-            List<Flag> flags = getObjectsInRange(see, Flag.class);
-            if(flags.size() > 0 ){
-                Flag flag = flags.get(0);
-                if(flag.getColor() != color){
-                    return flag;
-                }
+        // if(actionPoints > 0){
+        Map map = (Map)getWorld();
+        List<Flag> flags = getObjectsInRange(see, Flag.class);
+        if(flags.size() > 0 ){
+            Flag flag = flags.get(0);
+            if(flag.getColor() != color){
+                return flag;
             }
-            return null;     
-     //   }
-      //  return null;
+        }
+        return null;     
+        //   }
+        //  return null;
     }
-    
+
     public List<Piece> visiblePieces(){
         if(actionPoints > 0){
             List<Piece> pieces = getNeighbours(see, true, Piece.class);
@@ -178,7 +193,7 @@ public abstract class Piece extends Actor
         }
         return null;
     }
-   
+
     public void checkBattles(){
         Piece p = (Piece)getOneIntersectingObject(Piece.class);
         if(p != null){
@@ -188,7 +203,7 @@ public abstract class Piece extends Actor
         }
 
     }
-    
+
     public void battle(Piece other){
         World w = getWorld();
         Piece[] pieces = new Piece[]{this, other};
@@ -201,19 +216,19 @@ public abstract class Piece extends Actor
             loser.fight--;
         }
         w.removeObject(loser);
-            
+
     }
-    
-    public void markVisible(){
+
+    private void markVisible(){
         setImage(visible);
     }
-    
-    public void markInvisible(){
+
+    private void markInvisible(){
         setImage(img);
     }
-    
+
     public boolean sendDataToTeam(int index, Integer data){
-        
+
         if(true){//actionPoints > 0){
             boolean success = false;
             List<Flag> flags = getObjectsInRange(comms, Flag.class);
@@ -223,11 +238,12 @@ public abstract class Piece extends Actor
                     success = true;
                 }
             }
-           // actionPoints--;
+            // actionPoints--;
             return success;
         }
         return false;
     }
+
     public Integer getDataFromTeam(int index){
         if(actionPoints > 0){
             Integer data = null;
@@ -242,7 +258,7 @@ public abstract class Piece extends Actor
         }
         return null;
     }
-    
+
     public void viewMemory(){
         String mem = "";
         for(int m: memory){
@@ -251,9 +267,9 @@ public abstract class Piece extends Actor
         System.out.println(mem);
 
     }
+
     public void turnTowards(int x, int y){
-        
+
     }
-    
-    
+
 }

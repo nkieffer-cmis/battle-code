@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Utility
+comment1.params=coordInt
+comment1.target=int[]\ decodeCoords(int)
+comment2.params=x\ y
+comment2.target=int\ encodeCoords(int,\ int)
+numComments=3

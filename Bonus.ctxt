@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Bonus
+comment1.params=
+comment1.target=Bonus()
+comment2.params=x\ y
+comment2.target=void\ setLocation(int,\ int)
+comment3.params=
+comment3.target=int\ getValue()
+comment4.params=
+comment4.target=void\ act()
+numComments=5
