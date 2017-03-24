@@ -35,7 +35,7 @@ public class T1 extends Team
         }
 
         public void movement(){
-            System.out.println(String.format("%d %d %d %d", getX(), memory[0], memory[1], memory[2]));
+        //    System.out.println(String.format("%d %d %d %d", getX(), memory[0], memory[1], memory[2]));
             boolean moveRight= memory[0] == 0;
             if( moveRight ){
                 if( memory[2] == 0 ){
@@ -69,13 +69,13 @@ public class T1 extends Team
             } 
             memory[1] = getX();
             if ( !moveRight && getX() <= 0 ){
-                System.out.println("Move Right");
+              //  System.out.println("Move Right");
                 memory[0] = 0;
                 memory[1] = -1;
                 memory[2] = 1;
             }
             if (moveRight && getX() >= 119){
-                System.out.println("Move Left");
+              //  System.out.println("Move Left");
                 memory[0] = 1;
                 memory[1] = -1;
                 memory[2] = 1;
